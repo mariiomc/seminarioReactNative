@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User } from "../models/user";
+import { User } from "./models/user";
 import axios from "axios";
 import { View, Text } from "react-native";
 

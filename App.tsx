@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+/* import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, FlatList, Text, View} from 'react-native';
 
 type Movie = {
@@ -46,4 +46,31 @@ const App = () => {
   );
 };
 
-export default App;
+export default App; */
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import GetUsers from './GET/getUser';
+import CreateUser from './POST/createUser';
+
+export default function App() {
+  const [usersUpdated, setUsersUpdated] = useState(false);
+
+  const updateUserList = () => {
+    setUsersUpdated(!usersUpdated);
+  };
+
+  return (
+    <View style={styles.container}>
+      <GetUsers usersUpdated={usersUpdated} />
+      <CreateUser updateUserList={updateUserList} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
