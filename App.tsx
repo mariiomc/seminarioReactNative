@@ -49,8 +49,8 @@ const App = () => {
 export default App; */
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import GetUsers from './GET/getUser';
-import CreateUser from './POST/createUser';
+import GetUsers from './GET/User';
+import CreateUser from './POST/User';
 
 export default function App() {
   const [usersUpdated, setUsersUpdated] = useState(false);
