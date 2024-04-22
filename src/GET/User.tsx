@@ -28,7 +28,7 @@ const itemsPerPage = 5;
 
     useEffect(() => {
         axios.get('http://localhost:3000/user/'+currentPage+'/'+itemsPerPage)
-        //axios.get('http://8.8.8.8:3000/user/'+currentPage+'/'+itemsPerPage)
+        //axios.get('http://192.168.56.1:3000/user/'+currentPage+'/'+itemsPerPage)
         .then((result) => {
             console.clear();
             console.log(result.data); // Agregar console.log para mostrar los datos recibidos
