@@ -1,92 +1,145 @@
 import React, { useState, useEffect } from "react";
 import { User } from '../models/user';
 import axios from "axios";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity, RefreshControl, FlatList, StyleSheet, SafeAreaView } from "react-native";
+import { RouteProp, NavigationProp, ParamListBase } from '@react-navigation/native';
+
+
+//type GetUsersRouteProp = RouteProp<ParamListBase, 'GetUsers'>;
+//type GetUsersNavigationProp = NavigationProp<ParamListBase, 'GetUsers'>;
 
 interface GetUsersProps {
+   // route: GetUsersRouteProp;
+    //navigation: GetUsersNavigationProp;
     usersUpdated: boolean;
 }
 
-const GetUsers: React.FC<GetUsersProps> = ({ usersUpdated }) => {
+// const GetUsers: React.FC<GetUsersProps> = ({ usersUpdated, route, navigation }) => {
+    const GetUsers: React.FC<GetUsersProps> = ({ usersUpdated }) => {
     const [users, setUsers] = useState<User[]>([]); 
     const [userData, setUserData] = useState<Record<string, any>>({});
+    const [totalPages, setTotalpages] = useState(0);
+const [currentPage, setCurrentPage] = useState(1);
+const [items, setItems] = useState([]);
+const [refreshing, setRefreshing] = useState(false);
+const itemsPerPage = 5;
 
-    /* useEffect(() => {
-        axios.get('http://localhost:3000/user/3/2')
-        .then((result) => setUsers(result.data))
-        .catch((err) => console.log(err))
-    }, [usersUpdated] ) */
-
-
- /*    useEffect(() => {
-        axios.get('http://localhost:3000/user/3/2')
-        .then((result) => {
-            console.clear();
-            console.log(result.data); // Agregar console.log para mostrar los datos recibidos
-            setUsers(result.data);
-        })
-        .catch((err) => console.log(err))
-    }, [usersUpdated] )
-
-
-    return (
-        <View>
-            <View>
-                <View>
-                    <View>
-                        <View>
-                            <Text>Name</Text>
-                            <Text>Email</Text>
-                            <Text>Phone number</Text>
-                            <Text>Gender</Text>
-                            <Text>Posts</Text>
-                        </View>
-                    </View>
-                    <View>
-                        {users.map((user, index) => (
-                            <View key={index}>
-                                <Text>{user.name.first_name} {user.name.middle_name} {user.name.last_name}</Text>
-                                <Text>{user.email}</Text>
-                                <Text>{user.phone_number}</Text>
-                                <Text>{user.gender}</Text>
-                            </View>
-                        ))}
-                    </View>
-                </View>
-            </View>
-        </View>
-    );
-};
-
-export default GetUsers;  */
-
-
-
-    
+  
 
     useEffect(() => {
-        axios.get('http://localhost:3000/user/7/6')
+        axios.get('http://localhost:3000/user/'+currentPage+'/'+itemsPerPage)
+        //axios.get('http://8.8.8.8:3000/user/'+currentPage+'/'+itemsPerPage)
         .then((result) => {
             console.clear();
             console.log(result.data); // Agregar console.log para mostrar los datos recibidos
             setUserData(result.data); // Rellenar la variable userData con result.data
             // Asignar los usuarios de userData a la variable users
             setUsers(result.data.users);
+            setItems(result.data.total);
+            setTotalpages(result.data.totalPages);
+            setRefreshing(false);
+        
         })
-        .catch((err) => console.log(err))
-    }, [usersUpdated] )
+        .catch((err) => console.log(err));
+        setRefreshing(false)
+    }, [usersUpdated,currentPage] ) 
 
-    return (
-        <View>
-        {users.map((user, index) => (
-            <View key={index}>
-                <Text>Name: {user.name.first_name} {user.name.middle_name} {user.name.last_name}</Text>
-                <Text>Email: {user.email}</Text>
-                <Text>Phone Number: {user.phone_number}</Text>
-                <Text>Gender: {user.gender}</Text>
+    
+    const handlePageClick = (page: number) => setCurrentPage(page);
+
+    const handleRefresh = () => {
+        setRefreshing(true); // Se establece refreshing en true al iniciar la actualización
+        useEffect; // Llama a la función fetchData para obtener los datos actualizados
+    };
+
+    const handleEmpty = () => {
+        return <Text> No Users!</Text>;
+    };
+
+    const renderPaginationButtons = () => {
+        const maxButtonsToShow = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxButtonsToShow / 2));
+        let endPage = Math.min(totalPages, startPage + maxButtonsToShow - 1);
+
+        if (endPage - startPage + 1 < maxButtonsToShow) {
+            startPage = Math.max(1, endPage - maxButtonsToShow + 1);
+        }
+
+        const buttons = [];
+
+        for (let i = startPage; i <= endPage; i++) {
+            buttons.push(
+                <TouchableOpacity
+                    key={i}
+                    onPress={() => handlePageClick(i)}
+                    style={{
+                        backgroundColor: i === currentPage ? 'gray' : 'lightgray',
+                        padding: 10,
+                        margin: 5,
+                        borderRadius: 5,
+                    }}>
+                    <Text style={{color: 'white'}}>{i}</Text>
+                </TouchableOpacity>,
+            );
+        }
+
+        return buttons;
+    };
+
+        return (
+            <SafeAreaView style={{ flex: 1 }}>
+            <View>
+            <FlatList
+                data={users}
+                renderItem={({ item, index }) => (
+                <View key={index}>
+                    <Text>Name: {item.name.first_name} {item.name.middle_name} {item.name.last_name}</Text>
+                    <Text>Email: {item.email}</Text>
+                    <Text>Phone Number: {item.phone_number}</Text>
+                    <Text>Gender: {item.gender}</Text>
+                </View>
+                )}
+                ListEmptyComponent={handleEmpty}
+                refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+                }
+            />
+            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
+                {renderPaginationButtons()}
             </View>
-        ))}
-    </View>
-    );
+            </View>
+            </SafeAreaView>
+        );
 };
 export default GetUsers;
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    paginationContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 8,
+      backgroundColor: 'transparent',
+    },
+    paginationButton: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      marginHorizontal: 4,
+      backgroundColor: 'gray',
+    },
+    activeButton: {
+      backgroundColor: '#22c55d',
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+    },
+    buttonText: {
+      color: 'white',
+    },
+  });

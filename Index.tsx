@@ -12,4 +12,4 @@ const Main = () => (
 // Registra el componente principal de tu aplicación
 AppRegistry.registerComponent('my-app', () => Main);
 
-// No se necesita reportWebVitals en React Native
+// No se necesita reportWebVitals en React Native 
