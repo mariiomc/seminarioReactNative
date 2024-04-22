@@ -74,7 +74,7 @@
         return (
             <Tab.Navigator initialRouteName='Home'>
                 <Tab.Screen name="Lista de usuarios">
-                    {() => <GetUsers usersUpdated={usersUpdated} route={undefined} navigation={undefined} />}
+                    {() => <GetUsers usersUpdated={usersUpdated}  />}
                 </Tab.Screen>
                 <Tab.Screen name="Usuario nuevo">
                     {() => <CreateUser updateUserList={updateUserList} />}

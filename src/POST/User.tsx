@@ -38,7 +38,8 @@ function CreateUser({ updateUserList }: CreateUserProps) {
            gender: gender
        };
 
-       axios.post("'http://10.0.2.2:3000/user", user)
+      // axios.post("'http://10.0.2.2:3000/user", user)
+       axios.post("'http://localhost:3000/user", user)
        .then(result => {
            console.log(result)
            updateUserList();
