@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { User } from '../models/user';
 import axios from "axios";
-import { View, Text, TouchableOpacity, RefreshControl, FlatList, StyleSheet, SafeAreaView } from "react-native";
-import { RouteProp, NavigationProp, ParamListBase } from '@react-navigation/native';
+import { View, Text, TouchableOpacity, RefreshControl, FlatList, StyleSheet, SafeAreaView, ScrollView } from "react-native";
+//import { RouteProp, NavigationProp, ParamListBase } from '@react-navigation/native';
 
 
 //type GetUsersRouteProp = RouteProp<ParamListBase, 'GetUsers'>;
@@ -18,16 +18,31 @@ interface GetUsersProps {
     const GetUsers: React.FC<GetUsersProps> = ({ usersUpdated }) => {
     const [users, setUsers] = useState<User[]>([]); 
     const [userData, setUserData] = useState<Record<string, any>>({});
-    const [totalPages, setTotalpages] = useState(0);
-const [currentPage, setCurrentPage] = useState(1);
+   // const [totalPages, setTotalpages] = useState(0);
+//const [currentPage, setCurrentPage] = useState(1);
 const [items, setItems] = useState([]);
 const [refreshing, setRefreshing] = useState(false);
 const itemsPerPage = 5;
 
+const fetchData = () => {
+    //axios.get('http://10.0.2.2:3000/user')//para android
+    axios.get('http://localhost:3000/user')//para web
+        .then((result) => {
+            console.clear();
+            console.log(result.data);
+            setUserData(result.data); // Rellenar la variable userData con result.data
+            setUsers(result.data);
+            setRefreshing(false);
+        })
+        .catch((err) => console.log(err));
+        setRefreshing(false);
+};
   
 
     useEffect(() => {
-        axios.get('http://localhost:3000/user/'+currentPage+'/'+itemsPerPage)
+
+        fetchData();
+        /* axios.get('http://localhost:3000/user/')//+currentPage+'/'+itemsPerPage)
         //axios.get('http://192.168.56.1:3000/user/'+currentPage+'/'+itemsPerPage)
         .then((result) => {
             console.clear();
@@ -41,22 +56,24 @@ const itemsPerPage = 5;
         
         })
         .catch((err) => console.log(err));
-        setRefreshing(false)
-    }, [usersUpdated,currentPage] ) 
+        setRefreshing(false) */
+    }, [usersUpdated])
+    //,currentPage] ) 
 
     
-    const handlePageClick = (page: number) => setCurrentPage(page);
+   // const handlePageClick = (page: number) => setCurrentPage(page);
 
     const handleRefresh = () => {
         setRefreshing(true); // Se establece refreshing en true al iniciar la actualización
-        useEffect; // Llama a la función fetchData para obtener los datos actualizados
+        fetchData(); // Llama a la función fetchData para obtener los datos actualizados
     };
 
     const handleEmpty = () => {
+        console.log("los usuarios son:",users);
         return <Text> No Users!</Text>;
     };
 
-    const renderPaginationButtons = () => {
+    /* const renderPaginationButtons = () => {
         const maxButtonsToShow = 5;
         let startPage = Math.max(1, currentPage - Math.floor(maxButtonsToShow / 2));
         let endPage = Math.min(totalPages, startPage + maxButtonsToShow - 1);
@@ -84,10 +101,11 @@ const itemsPerPage = 5;
         }
 
         return buttons;
-    };
+    }; */
 
-        return (
+        /* return (
             <SafeAreaView style={{ flex: 1 }}>
+                <ScrollView style={{ flex: 1 }}>
             <View>
             <FlatList
                 data={users}
@@ -99,21 +117,50 @@ const itemsPerPage = 5;
                     <Text>Gender: {item.gender}</Text>
                 </View>
                 )}
+            
                 ListEmptyComponent={handleEmpty}
                 refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
                 }
             />
-            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
+           {/* {  <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
                 {renderPaginationButtons()}
+            </View> } }
             </View>
-            </View>
+            </ScrollView>
+            </SafeAreaView>
+        ); */
+
+        return (
+            <SafeAreaView style={{ flex: 1 }}>
+                <ScrollView
+                    contentContainerStyle={styles.scrollViewContent}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+                    }>
+                    <View style={styles.container}>
+                        <FlatList
+                            data={users}
+                            renderItem={({ item, index }) => (
+                                <View style={styles.userContainer}>
+                                    <Text>Name: {item.name.first_name} {item.name.middle_name} {item.name.last_name}</Text>
+                                    <Text>Email: {item.email}</Text>
+                                    <Text>Phone Number: {item.phone_number}</Text>
+                                    <Text>Gender: {item.gender}</Text>
+                                </View>
+                            )}
+                            ListEmptyComponent={handleEmpty}
+                            showsVerticalScrollIndicator
+                        />
+                    </View>
+                </ScrollView>
             </SafeAreaView>
         );
-};
+    };
+
 export default GetUsers;
 
-const styles = StyleSheet.create({
+/* const styles = StyleSheet.create({
     container: {
       flex: 1,
     },
@@ -142,4 +189,19 @@ const styles = StyleSheet.create({
     buttonText: {
       color: 'white',
     },
-  });
+  }); */
+
+  const styles = StyleSheet.create({
+    scrollViewContent: {
+        flexGrow: 1,
+    },
+    container: {
+        flex: 1,
+        paddingHorizontal: 10,
+    },
+    userContainer: {
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+    },
+});
