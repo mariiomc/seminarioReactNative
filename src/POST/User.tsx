@@ -14,6 +14,7 @@ interface CreateUserProps {
   const [email, setEmail] = React.useState('');
   const [phone_number, setPhoneNumber] = React.useState('');
   const [gender, setGender] = React.useState('');
+  const [birthday, setBirthday] = React.useState('');
   const [error, setError] = React.useState('');
 
   const validateForm = () => {
@@ -29,6 +30,7 @@ interface CreateUserProps {
     if (!validateForm()) return;
     
     const user : User = {
+      birthday: birthday,
       name: {
         first_name: first_name,
         middle_name: middle_name,
@@ -50,6 +52,7 @@ interface CreateUserProps {
         setEmail('');
         setPhoneNumber('');
         setGender('');
+        setBirthday('');
       })
       .catch(error => {
         console.error("Failed to add user", error);
@@ -93,6 +96,12 @@ interface CreateUserProps {
         placeholder="Gender"
         value={gender} 
         onChangeText={setGender} 
+        style={styles.input} 
+      />
+      <TextInput 
+        placeholder="Birthday"
+        value={birthday} 
+        onChangeText={setBirthday} 
         style={styles.input} 
       />
       {error ? <Text style={styles.errorText}>{error}</Text> : null}

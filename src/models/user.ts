@@ -1,5 +1,6 @@
 export interface User {
     _id?: string;
+    birthday: string,
     name: {
       first_name: string,
       middle_name:string,
